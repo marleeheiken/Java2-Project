@@ -159,6 +159,17 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+          <configuration>
+              <archive>
+                  <manifest>
+                      <mainClass>com.bushnell.App</mainClass>
+                  </manifest>
+              </archive>
+          </configuration>
+      </plugin>
     </plugins>
   </build>
   <reporting>
