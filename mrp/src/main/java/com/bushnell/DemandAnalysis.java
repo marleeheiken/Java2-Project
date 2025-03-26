@@ -32,5 +32,5 @@ public class DemandAnalysis {
         panel.setVisible(true);
 
         return panel;
-    }   
+    }
 }
