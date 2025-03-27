@@ -8,21 +8,27 @@ import java.awt.Image;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
  * HomeScreen class for creating the main GUI panel.
  */
-<span class="nc" id="L17">public class HomeScreen {</span>
+<span class="nc" id="L18">public class HomeScreen {</span>
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
     private static final String BLACK_HASHCODE = &quot;#000000&quot;;
     private static final int LOGO_WIDTH = 180;
     private static final int LOGO_HEIGHT = 51;
-    private static final int LOGO_POSITION = 100;
+    private static final int LOGO_POSITION = 10;
     private static final int TEXT_FONT_SIZE = 16;
     private static final int TEXT_SPACING = 5;
+    private static final int BUTTON_WIDTH = LOGO_WIDTH;
+    private static final int BUTTON_HEIGHT = 51;
+    private static final int BUTTON_SPACING_HEIGHT = 10;
+    private static final int BUTTON_SPACING_WIDTH = 0;
+    private static final int BUTTON_FONT_SIZE = 14;
 
     /**
      * Creates and returns the main GUI panel.
@@ -30,42 +36,61 @@ import javax.swing.JPanel;
      * @return the configured JPanel
      */
     public JPanel makeGUI() {
-<span class="nc" id="L33">        JPanel mainPanel = new JPanel();</span>
-<span class="nc" id="L34">        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));</span>
-<span class="nc" id="L35">        mainPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));</span>
-<span class="nc" id="L36">        mainPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT));</span>
-<span class="nc" id="L37">        mainPanel.setAlignmentX(Component.CENTER_ALIGNMENT);</span>
-<span class="nc" id="L38">        mainPanel.setAlignmentY(Component.TOP_ALIGNMENT);</span>
+<span class="nc" id="L39">        JPanel mainPanel = new JPanel();</span>
+<span class="nc" id="L40">        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L41">        mainPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));</span>
+<span class="nc" id="L42">        mainPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT));</span>
+<span class="nc" id="L43">        mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L44">        mainPanel.setAlignmentY(Component.TOP_ALIGNMENT);</span>
 
-<span class="nc" id="L40">        Color black = Color.decode(BLACK_HASHCODE);</span>
-<span class="nc" id="L41">        mainPanel.setBackground(black);</span>
-<span class="nc" id="L42">        mainPanel.setVisible(true);</span>
+<span class="nc" id="L46">        Color black = Color.decode(BLACK_HASHCODE);</span>
+<span class="nc" id="L47">        mainPanel.setBackground(black);</span>
+<span class="nc" id="L48">        mainPanel.setVisible(true);</span>
 
         // Create a vertical box to hold logo and text
-<span class="nc" id="L45">        Box logoBox = Box.createVerticalBox();</span>
-<span class="nc" id="L46">        logoBox.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L51">        Box logoBox = Box.createVerticalBox();</span>
+<span class="nc" id="L52">        logoBox.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
 
         // Add VisualRobotics logo
-<span class="nc" id="L49">        ImageIcon roboticsLogo = new ImageIcon(getClass().getResource(&quot;/VisualRoboticsLogo.png&quot;));</span>
-<span class="nc" id="L50">        Image scaledRoboticsLogo = roboticsLogo.getImage().getScaledInstance(</span>
-<span class="nc" id="L51">            LOGO_WIDTH, LOGO_HEIGHT, Image.SCALE_SMOOTH);</span>
-<span class="nc" id="L52">        JLabel logoLabel = new JLabel(new ImageIcon(scaledRoboticsLogo));</span>
-<span class="nc" id="L53">        logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
-<span class="nc" id="L54">        logoBox.add(Box.createRigidArea(new Dimension(LOGO_POSITION, LOGO_POSITION)));</span>
-<span class="nc" id="L55">        logoBox.add(logoLabel);</span>
+<span class="nc" id="L55">        ImageIcon roboticsLogo = new ImageIcon(getClass().getResource(&quot;/VisualRoboticsLogo.png&quot;));</span>
+<span class="nc" id="L56">        Image scaledRoboticsLogo = roboticsLogo.getImage().getScaledInstance(</span>
+<span class="nc" id="L57">            LOGO_WIDTH, LOGO_HEIGHT, Image.SCALE_SMOOTH);</span>
+<span class="nc" id="L58">        JLabel logoLabel = new JLabel(new ImageIcon(scaledRoboticsLogo));</span>
+<span class="nc" id="L59">        logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L60">        logoBox.add(Box.createRigidArea(new Dimension(LOGO_POSITION, LOGO_POSITION)));</span>
+<span class="nc" id="L61">        logoBox.add(logoLabel);</span>
 
         // Add MRP System label below the logo
-<span class="nc" id="L58">        JLabel mrpLabel = new JLabel(&quot;MRP System&quot;);</span>
-<span class="nc" id="L59">        mrpLabel.setFont(new Font(&quot;Arial&quot;, Font.BOLD, TEXT_FONT_SIZE));</span>
-<span class="nc" id="L60">        mrpLabel.setForeground(Color.WHITE);</span>
-<span class="nc" id="L61">        mrpLabel.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
-<span class="nc" id="L62">        logoBox.add(Box.createRigidArea(new Dimension(0, TEXT_SPACING)));</span>
-<span class="nc" id="L63">        logoBox.add(mrpLabel);</span>
+<span class="nc" id="L64">        JLabel mrpLabel = new JLabel(&quot;MRP System&quot;);</span>
+<span class="nc" id="L65">        mrpLabel.setFont(new Font(&quot;Arial&quot;, Font.BOLD, TEXT_FONT_SIZE));</span>
+<span class="nc" id="L66">        mrpLabel.setForeground(Color.WHITE);</span>
+<span class="nc" id="L67">        mrpLabel.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L68">        logoBox.add(Box.createRigidArea(new Dimension(0, TEXT_SPACING)));</span>
+<span class="nc" id="L69">        logoBox.add(mrpLabel);</span>
 
-        // Add the logo box to the main panel
-<span class="nc" id="L66">        mainPanel.add(logoBox);</span>
+<span class="nc" id="L71">        Box buttonsBox = Box.createVerticalBox();</span>
+<span class="nc" id="L72">        buttonsBox.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
 
-<span class="nc" id="L68">        return mainPanel;</span>
+<span class="nc" id="L74">        JButton updateButton = GUI.button(&quot;Update Stock&quot;, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_FONT_SIZE);</span>
+<span class="nc" id="L75">        JButton reportButton = GUI.button(&quot;Stock Report&quot;, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_FONT_SIZE);</span>
+<span class="nc" id="L76">        JButton bundleButton = GUI.button(&quot;Bundle&quot;, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_FONT_SIZE);</span>
+<span class="nc" id="L77">        JButton demandButton = GUI.button(&quot;Demand Analysis&quot;, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_FONT_SIZE);</span>
+
+<span class="nc" id="L79">        buttonsBox.add(updateButton);</span>
+<span class="nc" id="L80">        buttonsBox.add(Box.createRigidArea(new Dimension(BUTTON_SPACING_WIDTH, BUTTON_SPACING_HEIGHT)));</span>
+<span class="nc" id="L81">        buttonsBox.add(reportButton);</span>
+<span class="nc" id="L82">        buttonsBox.add(Box.createRigidArea(new Dimension(BUTTON_SPACING_WIDTH, BUTTON_SPACING_HEIGHT)));</span>
+<span class="nc" id="L83">        buttonsBox.add(bundleButton);</span>
+<span class="nc" id="L84">        buttonsBox.add(Box.createRigidArea(new Dimension(BUTTON_SPACING_WIDTH, BUTTON_SPACING_HEIGHT)));</span>
+<span class="nc" id="L85">        buttonsBox.add(demandButton);</span>
+
+        // Add the logoBox and buttonBox to the main panel
+<span class="nc" id="L88">        mainPanel.add(logoBox);</span>
+        // Add some space between logo and buttons
+<span class="nc" id="L90">        mainPanel.add(Box.createRigidArea(new Dimension(BUTTON_SPACING_WIDTH, BUTTON_SPACING_HEIGHT)));</span>
+<span class="nc" id="L91">        mainPanel.add(buttonsBox);</span>
+
+<span class="nc" id="L93">        return mainPanel;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
