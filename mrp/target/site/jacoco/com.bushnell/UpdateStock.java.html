@@ -3,35 +3,52 @@
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- * Class for updating stock inventory.
+ * Class for analyzing demand.
  */
-<span class="nc" id="L12">public class UpdateStock {</span>
+public final class UpdateStock {
+
+    private static final String WHITE_HASHCODE = &quot;#FFFFFF&quot;;
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 690;
-    private static final String WHITE_HASHCODE = &quot;#FFFFFF&quot;;
+    private static final int TITLE_FONT_SIZE = 24;
+    private static final int HEIGHT2 = 20;
+
+    // Private constructor to prevent instantiation
+    private UpdateStock() {
+        // Utility class - no instantiation allowed
+    }
 
     /**
      * Creates and returns the main GUI panel.
      *
      * @return the configured JPanel
      */
-    public JPanel makeGUI() {
-<span class="nc" id="L23">        JPanel panel = new JPanel();</span>
-<span class="nc" id="L24">        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));</span>
-<span class="nc" id="L25">        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));</span>
-<span class="nc" id="L26">        panel.setMaximumSize(new Dimension(WIDTH, HEIGHT));</span>
-<span class="nc" id="L27">        panel.setAlignmentX(Component.RIGHT_ALIGNMENT);</span>
-<span class="nc" id="L28">        panel.setAlignmentY(Component.TOP_ALIGNMENT);</span>
+    public static JPanel makeGUI() {
+<span class="nc" id="L34">        JPanel panel = new JPanel();</span>
+<span class="nc" id="L35">        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L36">        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));</span>
+<span class="nc" id="L37">        panel.setMaximumSize(new Dimension(WIDTH, HEIGHT));</span>
+<span class="nc" id="L38">        panel.setBackground(Color.decode(WHITE_HASHCODE));</span>
 
-<span class="nc" id="L30">        Color black = Color.decode(WHITE_HASHCODE);</span>
-<span class="nc" id="L31">        panel.setBackground(black);</span>
-<span class="nc" id="L32">        panel.setVisible(true);</span>
+        // Create and configure the title label
+<span class="nc" id="L41">        JLabel titleLabel = new JLabel(&quot;Update Stock&quot;, JLabel.CENTER);</span>
+<span class="nc" id="L42">        titleLabel.setFont(new Font(&quot;Sans-Serif&quot;, Font.BOLD, TITLE_FONT_SIZE));</span>
+<span class="nc" id="L43">        titleLabel.setForeground(Color.BLACK);</span>
+<span class="nc" id="L44">        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);</span>
 
-<span class="nc" id="L34">        return panel;</span>
+        // Add vertical space and title to panel
+<span class="nc" id="L47">        panel.add(Box.createVerticalStrut(HEIGHT2)); // Space from top</span>
+<span class="nc" id="L48">        panel.add(titleLabel);</span>
+<span class="nc" id="L49">        panel.add(Box.createVerticalGlue()); // Pushes content to top</span>
+
+<span class="nc" id="L51">        return panel;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
