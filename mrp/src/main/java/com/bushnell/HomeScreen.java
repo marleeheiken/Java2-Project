@@ -28,7 +28,7 @@ public class HomeScreen {
     private static final int POSITION = 10;
     private static final int TEXT_FONT_SIZE = 16;
     private static final int TEXT_SPACING = 5;
-    private static final int BUTTON_WIDTH = LOGO_WIDTH;
+    private static final int BUTTON_WIDTH = 180;
     private static final int BUTTON_HEIGHT = 51;
     private static final int BUTTON_SPACING_HEIGHT = 10;
     private static final int BUTTON_SPACING_WIDTH = 0;
@@ -57,7 +57,6 @@ public class HomeScreen {
 
         // Create a vertical box to hold logo and text
         Box leftBox = Box.createVerticalBox();
-        leftBox.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftBox.setPreferredSize(new Dimension(LEFTBOX_WIDTH, LEFTBOX_HEIGHT));
         leftBox.setMaximumSize(new Dimension(LEFTBOX_WIDTH, LEFTBOX_HEIGHT));
         leftBox.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -73,15 +72,16 @@ public class HomeScreen {
         Image scaledRoboticsLogo = roboticsLogo.getImage().getScaledInstance(
             LOGO_WIDTH, LOGO_HEIGHT, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(scaledRoboticsLogo));
-        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        logoBox.add(Box.createRigidArea(new Dimension(POSITION, POSITION)));
+        logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         logoBox.add(logoLabel);
+        logoBox.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
+
 
         // Add MRP System label below the logo
         JLabel mrpLabel = new JLabel("MRP System");
         mrpLabel.setFont(new Font("Arial", Font.BOLD, TEXT_FONT_SIZE));
         mrpLabel.setForeground(Color.WHITE);
-        mrpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mrpLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // For some reason this makes it go to the left 
         logoBox.add(Box.createRigidArea(new Dimension(0, TEXT_SPACING)));
         logoBox.add(mrpLabel);
 
@@ -100,6 +100,8 @@ public class HomeScreen {
         buttonsBox.add(bundleButton);
         buttonsBox.add(Box.createRigidArea(new Dimension(BUTTON_SPACING_WIDTH, BUTTON_SPACING_HEIGHT)));
         buttonsBox.add(demandButton);
+        buttonsBox.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
+
 
         // Add the logoBox and buttonBox to the main panel
         leftBox.add(logoBox);
