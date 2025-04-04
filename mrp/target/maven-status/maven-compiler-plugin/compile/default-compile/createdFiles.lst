@@ -1,7 +1,7 @@
-com/bushnell/DemandAnalysis.class
 com/bushnell/App.class
+com/bushnell/Bundle.class
+com/bushnell/DemandAnalysis.class
 com/bushnell/GUI.class
 com/bushnell/UpdateStock.class
 com/bushnell/HomeScreen.class
-com/bushnell/Bundle.class
 com/bushnell/StockReport.class
