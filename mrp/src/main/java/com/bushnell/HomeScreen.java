@@ -100,7 +100,7 @@ public class HomeScreen {
         buttonsBox.add(bundleButton);
         buttonsBox.add(Box.createRigidArea(new Dimension(BUTTON_SPACING_WIDTH, BUTTON_SPACING_HEIGHT)));
         buttonsBox.add(demandButton);
-        buttonsBox.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
+        buttonsBox.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 
 
         // Add the logoBox and buttonBox to the main panel

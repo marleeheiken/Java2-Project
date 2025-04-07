@@ -216,7 +216,7 @@ public final class UpdateStock {
             public void actionPerformed(ActionEvent e) {
                 String sku = (String) skuList.getSelectedItem();
                 Part part = Database.getSkuData(sku);
-                descriptionLabel.setText("description: " + part.description);
+                descriptionLabel.setText(part.description);
                 priceField.setText(String.format("%.2f", part.price));
                 stockField.setText(Integer.toString(part.stock));
             }
