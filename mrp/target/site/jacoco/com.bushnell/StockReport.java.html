@@ -9,9 +9,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**
- * Class for analyzing demand.
- */
 public final class StockReport {
 
     private static final String WHITE_HASHCODE = &quot;#FFFFFF&quot;;
@@ -25,30 +22,25 @@ public final class StockReport {
         // Utility class - no instantiation allowed
     }
 
-    /**
-     * Creates and returns the main GUI panel.
-     *
-     * @return the configured JPanel
-     */
     public static JPanel makeGUI() {
-<span class="nc" id="L34">        JPanel panel = new JPanel();</span>
-<span class="nc" id="L35">        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));</span>
-<span class="nc" id="L36">        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));</span>
-<span class="nc" id="L37">        panel.setMaximumSize(new Dimension(WIDTH, HEIGHT));</span>
-<span class="nc" id="L38">        panel.setBackground(Color.decode(WHITE_HASHCODE));</span>
+<span class="nc" id="L26">        JPanel panel = new JPanel();</span>
+<span class="nc" id="L27">        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L28">        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));</span>
+<span class="nc" id="L29">        panel.setMaximumSize(new Dimension(WIDTH, HEIGHT));</span>
+<span class="nc" id="L30">        panel.setBackground(Color.decode(WHITE_HASHCODE));</span>
 
         // Create and configure the title label
-<span class="nc" id="L41">        JLabel titleLabel = new JLabel(&quot;Stock Report&quot;, JLabel.CENTER);</span>
-<span class="nc" id="L42">        titleLabel.setFont(new Font(&quot;Sans-Serif&quot;, Font.BOLD, TITLE_FONT_SIZE));</span>
-<span class="nc" id="L43">        titleLabel.setForeground(Color.BLACK);</span>
-<span class="nc" id="L44">        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);</span>
+<span class="nc" id="L33">        JLabel titleLabel = new JLabel(&quot;Stock Report&quot;, JLabel.CENTER);</span>
+<span class="nc" id="L34">        titleLabel.setFont(new Font(&quot;Sans-Serif&quot;, Font.BOLD, TITLE_FONT_SIZE));</span>
+<span class="nc" id="L35">        titleLabel.setForeground(Color.BLACK);</span>
+<span class="nc" id="L36">        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);</span>
 
         // Add vertical space and title to panel
-<span class="nc" id="L47">        panel.add(Box.createVerticalStrut(HEIGHT2)); // Space from top</span>
-<span class="nc" id="L48">        panel.add(titleLabel);</span>
-<span class="nc" id="L49">        panel.add(Box.createVerticalGlue()); // Pushes content to top</span>
+<span class="nc" id="L39">        panel.add(Box.createVerticalStrut(HEIGHT2)); // Space from top</span>
+<span class="nc" id="L40">        panel.add(titleLabel);</span>
+<span class="nc" id="L41">        panel.add(Box.createVerticalGlue()); // Pushes content to top</span>
 
-<span class="nc" id="L51">        return panel;</span>
+<span class="nc" id="L43">        return panel;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

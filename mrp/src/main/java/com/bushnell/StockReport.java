@@ -9,9 +9,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**
- * Class for analyzing demand.
- */
 public final class StockReport {
 
     private static final String WHITE_HASHCODE = "#FFFFFF";
@@ -25,11 +22,6 @@ public final class StockReport {
         // Utility class - no instantiation allowed
     }
 
-    /**
-     * Creates and returns the main GUI panel.
-     *
-     * @return the configured JPanel
-     */
     public static JPanel makeGUI() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
