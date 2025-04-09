@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<checkstyle version="8.45.1">
-<file name="/Users/marleeheiken/Documents/GitHub/Java2-Project/mrp/src/main/java/com/bushnell/UpdateStock.java">
-<error line="8" column="1" severity="error" message="Extra separation in import group before &apos;javax.swing.Box&apos;" source="com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderCheck"/>
-<error line="29" column="5" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.MissingJavadocMethodCheck"/>
-</file>
-</checkstyle>
