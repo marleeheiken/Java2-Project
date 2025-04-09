@@ -1,5 +1,8 @@
 package com.bushnell;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -139,5 +142,29 @@ public class Database {
             return false;
         }
     }
-  }
+    
+    public static List<Part> getAllSkuData() {
+      List<Part> result = new ArrayList<>();
+      try (
+          Connection connection = DriverManager.getConnection(DBName);
+          Statement statement = connection.createStatement();
+      ) {
+          ResultSet rs = statement.executeQuery("select * from part");
+          while(rs.next()) {
+              Part part = new Part();
+              part.sku = rs.getString("sku");
+              part.description = rs.getString("description");
+              part.price = rs.getDouble("price");
+              part.stock = rs.getInt("stock");
+              result.add(part);
+          }
+          return result;          
+      }
+      catch(SQLException e) {
+          e.printStackTrace(System.err);
+          return result;
+      }
+  }  
+}
+
   

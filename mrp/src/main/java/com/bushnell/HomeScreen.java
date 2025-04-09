@@ -44,6 +44,7 @@ public class HomeScreen {
      * @return the configured JPanel
      */
     public JPanel makeGUI() {
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
         mainPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
