@@ -8,6 +8,9 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -43,7 +46,15 @@ public class HomeScreen {
      *
      * @return the configured JPanel
      */
-    public JPanel makeGUI() {
+    public JPanel makeGUI(String appDir) {
+
+        // set database directory
+        // provided directory is where jar file is
+        // this is in mrp/target, so go out 2 directories 
+        // to get to where the database is
+        Path jarPath = Paths.get(appDir);
+        String dbPath = jarPath.getParent().getParent().toString();
+        Database.setDBDirectory(dbPath);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));

@@ -1,6 +1,5 @@
 package com.bushnell;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -16,6 +15,17 @@ public class Database {
 
     public static String DBName = "jdbc:sqlite:/Users/marleeheiken/Documents/GitHub/Java2-Project/VR-Factory.db";
 
+    public static boolean setDBDirectory(String directory) {
+        try {
+          Path fullPath = Paths.get(directory, "VR-Factory.db");
+          DBName = "jdbc:sqlite:" + fullPath.toString();  
+          //System.out.println("setting DB path to: " + DBName);
+          return true;
+        } catch(Exception e) {
+          return false;
+        }
+    }
+
     public static boolean checkConnection() {
         try {
           Class.forName("org.sqlite.JDBC");
@@ -27,7 +37,7 @@ public class Database {
           e.printStackTrace(System.err);
           return false;  
       }
-      }
+    }
   
     public static String[] getSkuList() {
         try

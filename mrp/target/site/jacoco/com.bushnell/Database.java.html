@@ -16,153 +16,164 @@ import java.util.List;
 
 <span class="nc" id="L17">    public static String DBName = &quot;jdbc:sqlite:/Users/marleeheiken/Documents/GitHub/Java2-Project/VR-Factory.db&quot;;</span>
 
+    public static boolean setDBDirectory(String directory) {
+        try {
+<span class="nc" id="L21">          Path fullPath = Paths.get(directory, &quot;VR-Factory.db&quot;);</span>
+<span class="nc" id="L22">          DBName = &quot;jdbc:sqlite:&quot; + fullPath.toString();  </span>
+          //System.out.println(&quot;setting DB path to: &quot; + DBName);
+<span class="nc" id="L24">          return true;</span>
+<span class="nc" id="L25">        } catch(Exception e) {</span>
+<span class="nc" id="L26">          return false;</span>
+        }
+    }
+
     public static boolean checkConnection() {
         try {
-<span class="nc" id="L21">          Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
+<span class="nc" id="L32">          Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
           //System.out.println(&quot;connected to &quot; + DBName);
-<span class="nc" id="L23">          return true;</span>
+<span class="nc" id="L34">          return true;</span>
       }
-<span class="nc" id="L25">      catch(Exception e)</span>
+<span class="nc" id="L36">      catch(Exception e)</span>
       {
-<span class="nc" id="L27">          e.printStackTrace(System.err);</span>
-<span class="nc" id="L28">          return false;  </span>
+<span class="nc" id="L38">          e.printStackTrace(System.err);</span>
+<span class="nc" id="L39">          return false;  </span>
       }
-      }
+    }
   
     public static String[] getSkuList() {
-<span class="nc" id="L33">        try</span>
+<span class="nc" id="L44">        try</span>
         (
-<span class="nc" id="L35">          Connection connection = DriverManager.getConnection(DBName);</span>
-<span class="nc" id="L36">          Statement statement = connection.createStatement();</span>
+<span class="nc" id="L46">          Connection connection = DriverManager.getConnection(DBName);</span>
+<span class="nc" id="L47">          Statement statement = connection.createStatement();</span>
         )
         {
-<span class="nc" id="L39">          ResultSet rs = statement.executeQuery(&quot;select sku from part&quot;);</span>
-<span class="nc" id="L40">          List&lt;String&gt; skuList = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">          while(rs.next()) {</span>
-<span class="nc" id="L42">            skuList.add(rs.getString(&quot;sku&quot;));</span>
+<span class="nc" id="L50">          ResultSet rs = statement.executeQuery(&quot;select sku from part&quot;);</span>
+<span class="nc" id="L51">          List&lt;String&gt; skuList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">          while(rs.next()) {</span>
+<span class="nc" id="L53">            skuList.add(rs.getString(&quot;sku&quot;));</span>
           }
-<span class="nc" id="L44">          String[] skuArray = skuList.toArray(new String[0]);</span>
-<span class="nc" id="L45">          return skuArray;          </span>
+<span class="nc" id="L55">          String[] skuArray = skuList.toArray(new String[0]);</span>
+<span class="nc" id="L56">          return skuArray;          </span>
         }
-<span class="nc" id="L47">        catch(SQLException e)</span>
+<span class="nc" id="L58">        catch(SQLException e)</span>
         {
-<span class="nc" id="L49">          e.printStackTrace(System.err);</span>
-<span class="nc" id="L50">          return new String[0];</span>
+<span class="nc" id="L60">          e.printStackTrace(System.err);</span>
+<span class="nc" id="L61">          return new String[0];</span>
         }
     }
   
     public static Part getSkuData(String sku) {
-<span class="nc" id="L55">        Part result = new Part();</span>
-<span class="nc" id="L56">        try</span>
+<span class="nc" id="L66">        Part result = new Part();</span>
+<span class="nc" id="L67">        try</span>
         (
-<span class="nc" id="L58">          Connection connection = DriverManager.getConnection(DBName);</span>
-<span class="nc" id="L59">          Statement statement = connection.createStatement();</span>
+<span class="nc" id="L69">          Connection connection = DriverManager.getConnection(DBName);</span>
+<span class="nc" id="L70">          Statement statement = connection.createStatement();</span>
         )
         {
-<span class="nc" id="L62">          ResultSet rs = statement.executeQuery(&quot;select * from part where sku = \&quot;&quot; + sku + &quot;\&quot;&quot;);</span>
-<span class="nc bnc" id="L63" title="All 2 branches missed.">          while(rs.next()) {</span>
-<span class="nc" id="L64">            result.sku = rs.getString(&quot;sku&quot;);</span>
-<span class="nc" id="L65">            result.description = rs.getString(&quot;description&quot;);</span>
-<span class="nc" id="L66">            result.price = rs.getDouble(&quot;price&quot;);</span>
-<span class="nc" id="L67">            result.stock = rs.getInt(&quot;stock&quot;);</span>
+<span class="nc" id="L73">          ResultSet rs = statement.executeQuery(&quot;select * from part where sku = \&quot;&quot; + sku + &quot;\&quot;&quot;);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">          while(rs.next()) {</span>
+<span class="nc" id="L75">            result.sku = rs.getString(&quot;sku&quot;);</span>
+<span class="nc" id="L76">            result.description = rs.getString(&quot;description&quot;);</span>
+<span class="nc" id="L77">            result.price = rs.getDouble(&quot;price&quot;);</span>
+<span class="nc" id="L78">            result.stock = rs.getInt(&quot;stock&quot;);</span>
           }
-<span class="nc" id="L69">          return result;          </span>
+<span class="nc" id="L80">          return result;          </span>
         }
-<span class="nc" id="L71">        catch(SQLException e)</span>
+<span class="nc" id="L82">        catch(SQLException e)</span>
         {
-<span class="nc" id="L73">          e.printStackTrace(System.err);</span>
-<span class="nc" id="L74">          result.sku = &quot;&quot;;</span>
-<span class="nc" id="L75">          result.description = &quot;&quot;;</span>
-<span class="nc" id="L76">          result.price = 0.0;</span>
-<span class="nc" id="L77">          result.stock = 0;</span>
-<span class="nc" id="L78">          return result;</span>
+<span class="nc" id="L84">          e.printStackTrace(System.err);</span>
+<span class="nc" id="L85">          result.sku = &quot;&quot;;</span>
+<span class="nc" id="L86">          result.description = &quot;&quot;;</span>
+<span class="nc" id="L87">          result.price = 0.0;</span>
+<span class="nc" id="L88">          result.stock = 0;</span>
+<span class="nc" id="L89">          return result;</span>
         }
     }
     
     public static boolean updatePrice(String sku, double newPrice) {
-<span class="nc" id="L83">        try</span>
+<span class="nc" id="L94">        try</span>
         (
-<span class="nc" id="L85">            Connection connection = DriverManager.getConnection(DBName);</span>
-<span class="nc" id="L86">            PreparedStatement statement = connection.prepareStatement(</span>
-<span class="nc" id="L87">                &quot;UPDATE part SET price = ? WHERE sku = ?&quot;);</span>
+<span class="nc" id="L96">            Connection connection = DriverManager.getConnection(DBName);</span>
+<span class="nc" id="L97">            PreparedStatement statement = connection.prepareStatement(</span>
+<span class="nc" id="L98">                &quot;UPDATE part SET price = ? WHERE sku = ?&quot;);</span>
         )
         {
-<span class="nc" id="L90">            statement.setDouble(1, newPrice);</span>
-<span class="nc" id="L91">            statement.setString(2, sku);</span>
+<span class="nc" id="L101">            statement.setDouble(1, newPrice);</span>
+<span class="nc" id="L102">            statement.setString(2, sku);</span>
             
-<span class="nc" id="L93">            int rowsAffected = statement.executeUpdate();</span>
-<span class="nc bnc" id="L94" title="All 2 branches missed.">            return rowsAffected &gt; 0;</span>
+<span class="nc" id="L104">            int rowsAffected = statement.executeUpdate();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            return rowsAffected &gt; 0;</span>
         }
-<span class="nc" id="L96">        catch(SQLException e)</span>
+<span class="nc" id="L107">        catch(SQLException e)</span>
         {
-<span class="nc" id="L98">            e.printStackTrace(System.err);</span>
-<span class="nc" id="L99">            return false;</span>
+<span class="nc" id="L109">            e.printStackTrace(System.err);</span>
+<span class="nc" id="L110">            return false;</span>
         }
     }
 
     public static boolean updateStock(String sku, int newStock) {
-<span class="nc" id="L104">        try</span>
+<span class="nc" id="L115">        try</span>
         (
-<span class="nc" id="L106">            Connection connection = DriverManager.getConnection(DBName);</span>
-<span class="nc" id="L107">            PreparedStatement statement = connection.prepareStatement(</span>
-<span class="nc" id="L108">                &quot;UPDATE part SET stock = ? WHERE sku = ?&quot;);</span>
+<span class="nc" id="L117">            Connection connection = DriverManager.getConnection(DBName);</span>
+<span class="nc" id="L118">            PreparedStatement statement = connection.prepareStatement(</span>
+<span class="nc" id="L119">                &quot;UPDATE part SET stock = ? WHERE sku = ?&quot;);</span>
         )
         {
-<span class="nc" id="L111">            statement.setInt(1, newStock);</span>
-<span class="nc" id="L112">            statement.setString(2, sku);</span>
+<span class="nc" id="L122">            statement.setInt(1, newStock);</span>
+<span class="nc" id="L123">            statement.setString(2, sku);</span>
             
-<span class="nc" id="L114">            int rowsAffected = statement.executeUpdate();</span>
-<span class="nc bnc" id="L115" title="All 2 branches missed.">            return rowsAffected &gt; 0;</span>
+<span class="nc" id="L125">            int rowsAffected = statement.executeUpdate();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">            return rowsAffected &gt; 0;</span>
         }
-<span class="nc" id="L117">        catch(SQLException e)</span>
+<span class="nc" id="L128">        catch(SQLException e)</span>
         {
-<span class="nc" id="L119">            e.printStackTrace(System.err);</span>
-<span class="nc" id="L120">            return false;</span>
+<span class="nc" id="L130">            e.printStackTrace(System.err);</span>
+<span class="nc" id="L131">            return false;</span>
         }
     }
 
     public static boolean updatePart(String sku, double newPrice, int newStock) {
-<span class="nc" id="L125">        try</span>
+<span class="nc" id="L136">        try</span>
         (
-<span class="nc" id="L127">            Connection connection = DriverManager.getConnection(DBName);</span>
-<span class="nc" id="L128">            PreparedStatement statement = connection.prepareStatement(</span>
-<span class="nc" id="L129">                &quot;UPDATE part SET price = ?, stock = ? WHERE sku = ?&quot;);</span>
+<span class="nc" id="L138">            Connection connection = DriverManager.getConnection(DBName);</span>
+<span class="nc" id="L139">            PreparedStatement statement = connection.prepareStatement(</span>
+<span class="nc" id="L140">                &quot;UPDATE part SET price = ?, stock = ? WHERE sku = ?&quot;);</span>
         )
         {
-<span class="nc" id="L132">            statement.setDouble(1, newPrice);</span>
-<span class="nc" id="L133">            statement.setInt(2, newStock);</span>
-<span class="nc" id="L134">            statement.setString(3, sku);</span>
+<span class="nc" id="L143">            statement.setDouble(1, newPrice);</span>
+<span class="nc" id="L144">            statement.setInt(2, newStock);</span>
+<span class="nc" id="L145">            statement.setString(3, sku);</span>
             
-<span class="nc" id="L136">            int rowsAffected = statement.executeUpdate();</span>
-<span class="nc bnc" id="L137" title="All 2 branches missed.">            return rowsAffected &gt; 0;</span>
+<span class="nc" id="L147">            int rowsAffected = statement.executeUpdate();</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">            return rowsAffected &gt; 0;</span>
         }
-<span class="nc" id="L139">        catch(SQLException e)</span>
+<span class="nc" id="L150">        catch(SQLException e)</span>
         {
-<span class="nc" id="L141">            e.printStackTrace(System.err);</span>
-<span class="nc" id="L142">            return false;</span>
+<span class="nc" id="L152">            e.printStackTrace(System.err);</span>
+<span class="nc" id="L153">            return false;</span>
         }
     }
     
     public static List&lt;Part&gt; getAllSkuData() {
-<span class="nc" id="L147">      List&lt;Part&gt; result = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L148">      try (</span>
-<span class="nc" id="L149">          Connection connection = DriverManager.getConnection(DBName);</span>
-<span class="nc" id="L150">          Statement statement = connection.createStatement();</span>
+<span class="nc" id="L158">      List&lt;Part&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L159">      try (</span>
+<span class="nc" id="L160">          Connection connection = DriverManager.getConnection(DBName);</span>
+<span class="nc" id="L161">          Statement statement = connection.createStatement();</span>
       ) {
-<span class="nc" id="L152">          ResultSet rs = statement.executeQuery(&quot;select * from part&quot;);</span>
-<span class="nc bnc" id="L153" title="All 2 branches missed.">          while(rs.next()) {</span>
-<span class="nc" id="L154">              Part part = new Part();</span>
-<span class="nc" id="L155">              part.sku = rs.getString(&quot;sku&quot;);</span>
-<span class="nc" id="L156">              part.description = rs.getString(&quot;description&quot;);</span>
-<span class="nc" id="L157">              part.price = rs.getDouble(&quot;price&quot;);</span>
-<span class="nc" id="L158">              part.stock = rs.getInt(&quot;stock&quot;);</span>
-<span class="nc" id="L159">              result.add(part);</span>
+<span class="nc" id="L163">          ResultSet rs = statement.executeQuery(&quot;select * from part&quot;);</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">          while(rs.next()) {</span>
+<span class="nc" id="L165">              Part part = new Part();</span>
+<span class="nc" id="L166">              part.sku = rs.getString(&quot;sku&quot;);</span>
+<span class="nc" id="L167">              part.description = rs.getString(&quot;description&quot;);</span>
+<span class="nc" id="L168">              part.price = rs.getDouble(&quot;price&quot;);</span>
+<span class="nc" id="L169">              part.stock = rs.getInt(&quot;stock&quot;);</span>
+<span class="nc" id="L170">              result.add(part);</span>
           }
-<span class="nc" id="L161">          return result;          </span>
+<span class="nc" id="L172">          return result;          </span>
       }
-<span class="nc" id="L163">      catch(SQLException e) {</span>
-<span class="nc" id="L164">          e.printStackTrace(System.err);</span>
-<span class="nc" id="L165">          return result;</span>
+<span class="nc" id="L174">      catch(SQLException e) {</span>
+<span class="nc" id="L175">          e.printStackTrace(System.err);</span>
+<span class="nc" id="L176">          return result;</span>
       }
   }  
 }
