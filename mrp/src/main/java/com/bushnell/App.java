@@ -1,5 +1,7 @@
 package com.bushnell;
 
+import java.io.File;
+
 import javax.swing.JFrame;
 
 /**
@@ -20,8 +22,19 @@ public final class App {
         JFrame frame = new JFrame("Visual Robotics MRP Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // get location of jar file (where PDF file should go)
+        String jarPath = App.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getPath();
+        File jarFile = new File(jarPath);
+        String jarDirectoryPath = jarFile.getParent();
+        //System.out.println("Path to the JAR file: " + jarDirectoryPath);
+
+
         // Add the HomeScreen panel to the JFrame
-        frame.add(homeScreen.makeGUI());
+        frame.add(homeScreen.makeGUI(jarDirectoryPath));
 
         frame.pack();
         frame.setLocationRelativeTo(null); // Center the window on the screen

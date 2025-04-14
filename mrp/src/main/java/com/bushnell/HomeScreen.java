@@ -6,8 +6,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -15,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  * HomeScreen class for creating the main GUI panel.
@@ -43,7 +48,16 @@ public class HomeScreen {
      *
      * @return the configured JPanel
      */
-    public JPanel makeGUI() {
+    public JPanel makeGUI(String appDir) {
+
+        // set database directory
+        // provided directory is where jar file is
+        // this is in mrp/target, so go out 2 directories 
+        // to get to where the database is
+        Path jarPath = Paths.get(appDir);
+        String dbPath = jarPath.getParent().getParent().toString();
+        Database.setDBDirectory(dbPath);
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
         mainPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -126,7 +140,14 @@ public class HomeScreen {
 
         // create panels for each sub-menu
         JPanel updateStockPanel = UpdateStock.makeGUI();
-        JPanel stockReportPanel = StockReport.makeGUI();
+        JPanel stockReportPanel = new JPanel();
+        try {
+            stockReportPanel    = StockReport.makeGUI(dbPath);
+        } catch(Exception e) {
+            e.printStackTrace(System.err);
+            stockReportPanel = new JPanel(); // Ensure panel exists even if error occurs
+
+        }
         JPanel bundlePanel = Bundle.makeGUI();
         JPanel demandAnalysisPanel = DemandAnalysis.makeGUI();
 
@@ -153,12 +174,20 @@ public class HomeScreen {
             }
         });
 
-        reportButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
-                cardLayout.show(cardPanel, "stockReport");
-
+        reportButton.addActionListener(e -> {
+            try {
+                Component reportPanel = StockReport.makeGUI(dbPath);
+                cardPanel.add(reportPanel, "stockReport");
+                
+                // Reset scroll position
+                if (reportPanel instanceof JScrollPane) {
+                    JScrollPane scrollPane = (JScrollPane)reportPanel;
+                    scrollPane.getViewport().setViewPosition(new Point(0, 0));
+                }
+                
+                ((CardLayout)cardPanel.getLayout()).show(cardPanel, "stockReport");
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         });
 
