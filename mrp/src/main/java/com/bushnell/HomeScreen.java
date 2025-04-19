@@ -137,7 +137,7 @@ public class HomeScreen {
 
         cardBox.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardBox.setAlignmentY(Component.TOP_ALIGNMENT);
-
+/*
         // create panels for each sub-menu
         JPanel updateStockPanel = UpdateStock.makeGUI();
         JPanel stockReportPanel = new JPanel();
@@ -156,24 +156,46 @@ public class HomeScreen {
         cardPanel.add(updateStockPanel, "updateStock");
         cardPanel.add(stockReportPanel, "stockReport");
         cardPanel.add(bundlePanel, "bundle");
-        cardPanel.add(demandAnalysisPanel, "demand");
+        cardPanel.add(demandAnalysisPanel, "demand"); 
         cardBox.add(cardPanel);
+        */
+        JPanel cardPanel = new JPanel(new CardLayout());
+
+        // Create initial panels
+        try {
+            JPanel updateStockPanel = UpdateStock.makeGUI();
+            cardPanel.add(updateStockPanel, "updateStock");
+            
+            JPanel stockReportPanel = StockReport.makeGUI(dbPath);
+            cardPanel.add(stockReportPanel, "stockReport");
+            
+            JPanel bundlePanel = Bundle.makeGUI();
+            cardPanel.add(bundlePanel, "bundle");
+            
+            JPanel demandAnalysisPanel = DemandAnalysis.makeGUI();
+            cardPanel.add(demandAnalysisPanel, "demand");
+        } catch(Exception e) {
+            e.printStackTrace(System.err);
+        }
 
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
         cardLayout.show(cardPanel, "updateStock");
-
+        
+        cardBox.add(cardPanel);
         mainPanel.add(cardBox);
 
         // button listeners
-        updateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
-                cardLayout.show(cardPanel, "updateStock");
-
+        updateButton.addActionListener(e -> {
+            try {
+                JPanel updatePanel = UpdateStock.makeGUI();
+                cardPanel.add(updatePanel, "updateStock");
+                ((CardLayout)cardPanel.getLayout()).show(cardPanel, "updateStock");
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         });
 
+        // Report button listener (already correct - keeps the scroll pane handling)
         reportButton.addActionListener(e -> {
             try {
                 Component reportPanel = StockReport.makeGUI(dbPath);
@@ -191,20 +213,25 @@ public class HomeScreen {
             }
         });
 
-        bundleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
-                cardLayout.show(cardPanel, "bundle");
-
+        // Bundle button listener
+        bundleButton.addActionListener(e -> {
+            try {
+                JPanel bundlePanel = Bundle.makeGUI();
+                cardPanel.add(bundlePanel, "bundle");
+                ((CardLayout)cardPanel.getLayout()).show(cardPanel, "bundle");
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         });
 
-        demandButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
-                cardLayout.show(cardPanel, "demand");
+        // Demand button listener
+        demandButton.addActionListener(e -> {
+            try {
+                JPanel demandPanel = DemandAnalysis.makeGUI();
+                cardPanel.add(demandPanel, "demand");
+                ((CardLayout)cardPanel.getLayout()).show(cardPanel, "demand");
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         });
 

@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Database {
 
@@ -60,6 +62,26 @@ public class Database {
           return new String[0];
         }
     }
+
+    public static String[] getSkuSubList() {
+      try (
+          Connection connection = DriverManager.getConnection(DBName);
+          Statement statement = connection.createStatement();
+      ) {
+          // Change the query to use LIKE 'SUB%' to get only SKUs starting with SUB
+          ResultSet rs = statement.executeQuery("select sku from part where sku like 'SUB%'");
+          List<String> skuList = new ArrayList<>();
+          while(rs.next()) {
+              skuList.add(rs.getString("sku"));
+          }
+          String[] skuArray = skuList.toArray(new String[0]);
+          return skuArray;          
+      }
+      catch(SQLException e) {
+          e.printStackTrace(System.err);
+          return new String[0];
+      }
+  }
   
     public static Part getSkuData(String sku) {
         Part result = new Part();
@@ -107,7 +129,7 @@ public class Database {
         {
             e.printStackTrace(System.err);
             return false;
-        }
+        } 
     }
 
     public static boolean updateStock(String sku, int newStock) {
@@ -175,6 +197,75 @@ public class Database {
           return result;
       }
   }  
+
+    public static Map<String, Integer> getSubcomponents(String parentSku) {
+        Map<String, Integer> components = new HashMap<>();
+        try (Connection conn = DriverManager.getConnection(DBName);
+             PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT sku, quantity FROM bom WHERE parent_sku = ?")) {
+            stmt.setString(1, parentSku);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                components.put(rs.getString("sku"), rs.getInt("quantity"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return components;
+    }
+    
+    public static boolean performBundle(String parentSku) {
+        Map<String, Integer> components = getSubcomponents(parentSku);
+        
+        // First verify we can still bundle
+        for (Map.Entry<String, Integer> entry : components.entrySet()) {
+            Part child = getSkuData(entry.getKey());
+            if (child == null || child.stock < entry.getValue()) {
+                return false;
+            }
+        }
+        
+        try (Connection conn = DriverManager.getConnection(DBName)) {
+            conn.setAutoCommit(false);
+            
+            // Update child components
+            try (PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE part SET stock = stock - ? WHERE sku = ?")) {
+                for (Map.Entry<String, Integer> entry : components.entrySet()) {
+                    stmt.setInt(1, entry.getValue());
+                    stmt.setString(2, entry.getKey());
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+            }
+            
+            // Update parent component
+            try (PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE part SET stock = stock + 1 WHERE sku = ?")) {
+                stmt.setString(1, parentSku);
+                stmt.executeUpdate();
+            }
+            
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean isBundlePossible(String sku) {
+        Map<String, Integer> components = Database.getSubcomponents(sku);
+        for (Map.Entry<String, Integer> entry : components.entrySet()) {
+            Part part = Database.getSkuData(entry.getKey());
+            if (part.stock < entry.getValue()) {
+                return false; // Not enough stock for at least one component
+            }
+        }
+        return true; 
+    }
+    
+
 }
 
   

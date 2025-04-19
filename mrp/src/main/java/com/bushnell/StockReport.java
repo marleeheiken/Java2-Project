@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 public final class StockReport {
+    private static final String VS_GREEN_HASHCODE = "#00af74";
     private static final String WHITE_HASHCODE = "#FFFFFF";
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 690;
@@ -33,6 +34,9 @@ public final class StockReport {
     private static final int SCROLLHEIGHT = 620;
     private static final int TITLE_FONT_SIZE = 24;
     private static final int HEIGHT2 = 20;
+    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_HEIGHT = 20;
+    private static final int BUTTON_FONT_SIZE = 8;
 
     private StockReport() {} // Utility class
 
@@ -93,7 +97,7 @@ public final class StockReport {
         reportPanel.add(textBox);
 
         // PDF Button
-        JButton pdfButton = new JButton("Generate PDF Report");
+        JButton pdfButton = GUI.button("Generate PDF Report", BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_FONT_SIZE);
         pdfButton.setFont(new Font("Sans-Serif", Font.PLAIN, 14));
         pdfButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         pdfButton.addActionListener(e -> generatePDF(dbDir, allSkuList, panel));

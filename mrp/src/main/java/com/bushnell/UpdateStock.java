@@ -65,7 +65,7 @@ public final class UpdateStock {
         comboBoxPanel.setLayout(new BoxLayout(comboBoxPanel, BoxLayout.Y_AXIS)); 
         comboBoxPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         comboBoxPanel.setBackground(Color.decode(WHITE_HASHCODE));
-        comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(POSITION0, POSITION0, POSITION0, 350));
+        comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(POSITION0, POSITION0, POSITION0, 235));
 
         // SKU Selection
         JPanel skuBoxPanel = new JPanel();
@@ -79,6 +79,8 @@ public final class UpdateStock {
         String[] skuArray = Database.getSkuList();
         JComboBox<String> skuList = new JComboBox<>(skuArray);
         skuList.setMaximumSize(new Dimension(VALUE_WIDTH, COMBOBOX_HEIGHT));
+        skuList.setPreferredSize(new Dimension(VALUE_WIDTH, COMBOBOX_HEIGHT)); // Add this
+        skuList.setMinimumSize(new Dimension(VALUE_WIDTH, COMBOBOX_HEIGHT));
         skuList.setAlignmentX(Component.RIGHT_ALIGNMENT);
         skuBoxPanel.add(skuLabel);
         skuBoxPanel.add(Box.createRigidArea(new Dimension(25, 0))); 
@@ -100,6 +102,7 @@ public final class UpdateStock {
         JLabel descriptionLabel = new JLabel(initialPart.description);
         descriptionLabel.setFont(new Font("Sans-Serif", Font.PLAIN, SMALLER_FONT_SIZE));
         descriptionLabel.setBorder(BorderFactory.createEmptyBorder(POSITION0, 5, POSITION0, POSITION0));
+        descriptionLabel.setMinimumSize(new Dimension(VALUE_WIDTH, COMBOBOX_HEIGHT));
         descriptionLabel.setPreferredSize(new Dimension(VALUE_WIDTH, COMBOBOX_HEIGHT));
         descriptionLabel.setMaximumSize(new Dimension(VALUE_WIDTH, COMBOBOX_HEIGHT));
         descriptionLabel.setHorizontalAlignment(JLabel.LEFT);
@@ -222,18 +225,6 @@ public final class UpdateStock {
             }
         };
        
-/* 
-        // Update your ActionListener to maintain alignment:
-        ActionListener skuListListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String sku = (String) skuList.getSelectedItem();
-                Part part = Database.getSkuData(sku);
-                descriptionLabel.setText(part.description);
-                priceLabel.setText(String.format("$ %.2f", part.price));
-                stockLabel.setText(Integer.toString(part.stock));
-            }
-        };*/
 
         skuList.addActionListener(skuListListener); 
 
