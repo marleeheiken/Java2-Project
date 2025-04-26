@@ -265,6 +265,19 @@ public class Database {
         return true; 
     }
     
+    public static boolean isRawComponent(String sku) {
+        // A raw component is one that isn't a parent in the BOM table
+        try (Connection conn = DriverManager.getConnection(DBName);
+             PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT COUNT(*) FROM bom WHERE parent_sku = ?")) {
+            stmt.setString(1, sku);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) == 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }
 

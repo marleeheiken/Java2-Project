@@ -184,67 +184,67 @@ public final class Bundle {
             }
         });
 
-// Replace your current table creation code with:
-String[] columnNames = {"Stock", "Qty", "Part", "Description"};
-Object[][] data = {};
-JTable subcomponentsTable = new JTable(new DefaultTableModel(data, columnNames));
-subcomponentsTable.setPreferredScrollableViewportSize(new Dimension(700, 150));
+        // Replace your current table creation code with:
+        String[] columnNames = {"Stock", "Qty", "Part", "Description"};
+        Object[][] data = {};
+        JTable subcomponentsTable = new JTable(new DefaultTableModel(data, columnNames));
+        subcomponentsTable.setPreferredScrollableViewportSize(new Dimension(700, 150));
 
-JScrollPane scrollPane = new JScrollPane(subcomponentsTable);
-scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-scrollPane.setPreferredSize(new Dimension(700, 150));
-scrollPane.setMaximumSize(new Dimension(700, 150));
+        JScrollPane scrollPane = new JScrollPane(subcomponentsTable);
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        scrollPane.setPreferredSize(new Dimension(700, 150));
+        scrollPane.setMaximumSize(new Dimension(700, 150));
 
-JPanel tableContainer = new JPanel();
-tableContainer.setLayout(new BoxLayout(tableContainer, BoxLayout.Y_AXIS));
-tableContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
-tableContainer.setBackground(Color.decode(WHITE_HASHCODE));
-tableContainer.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0)); 
-tableContainer.add(Box.createVerticalStrut(30));
-tableContainer.add(scrollPane);
+        JPanel tableContainer = new JPanel();
+        tableContainer.setLayout(new BoxLayout(tableContainer, BoxLayout.Y_AXIS));
+        tableContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tableContainer.setBackground(Color.decode(WHITE_HASHCODE));
+        tableContainer.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0)); 
+        tableContainer.add(Box.createVerticalStrut(30));
+        tableContainer.add(scrollPane);
 
-// Update the SKU selection listener to also populate the subcomponents table
-ActionListener skuListListener = new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String sku = (String) skuList.getSelectedItem();
-        Part part = Database.getSkuData(sku);
-        descriptionLabel.setText(part.description);
-        stockLabel.setText(Integer.toString(part.stock));
-        
-        // Update subcomponents table
-        DefaultTableModel model = (DefaultTableModel) subcomponentsTable.getModel();
-        model.setRowCount(0); // Clear existing rows
-        
-        // Get subcomponents from database
-        Map<String, Integer> components = Database.getSubcomponents(sku);
-        
-        // Add each component to the table
-        for (Map.Entry<String, Integer> entry : components.entrySet()) {
-            String childSku = entry.getKey();
-            int quantity = entry.getValue();
-            
-            // Get child part details
-            Part childPart = Database.getSkuData(childSku);
-            
-            // Add row to table: Stock, Qty, Part, Description
-            model.addRow(new Object[]{
-                childPart.stock,
-                quantity,
-                childSku,
-                childPart.description
-            });
-        }
+        // Update the SKU selection listener to also populate the subcomponents table
+        ActionListener skuListListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String sku = (String) skuList.getSelectedItem();
+                Part part = Database.getSkuData(sku);
+                descriptionLabel.setText(part.description);
+                stockLabel.setText(Integer.toString(part.stock));
+                
+                // Update subcomponents table
+                DefaultTableModel model = (DefaultTableModel) subcomponentsTable.getModel();
+                model.setRowCount(0); // Clear existing rows
+                
+                // Get subcomponents from database
+                Map<String, Integer> components = Database.getSubcomponents(sku);
+                
+                // Add each component to the table
+                for (Map.Entry<String, Integer> entry : components.entrySet()) {
+                    String childSku = entry.getKey();
+                    int quantity = entry.getValue();
+                    
+                    // Get child part details
+                    Part childPart = Database.getSkuData(childSku);
+                    
+                    // Add row to table: Stock, Qty, Part, Description
+                    model.addRow(new Object[]{
+                        childPart.stock,
+                        quantity,
+                        childSku,
+                        childPart.description
+                    });
+                }
 
-        boolean canBundle = Database.isBundlePossible(sku);
-        bundleButton.setEnabled(canBundle);
-        bundleButton.setBackground(canBundle ? VS_GREEN : Color.LIGHT_GRAY);
-        bundleButton.setBackground(canBundle ? VS_GREEN : Color.LIGHT_GRAY);
-        
-    }
-};
+                boolean canBundle = Database.isBundlePossible(sku);
+                bundleButton.setEnabled(canBundle);
+                bundleButton.setBackground(canBundle ? VS_GREEN : Color.LIGHT_GRAY);
+                bundleButton.setBackground(canBundle ? VS_GREEN : Color.LIGHT_GRAY);
+                
+            }
+        };
 
-skuList.addActionListener(skuListListener);
+        skuList.addActionListener(skuListListener);
 
 
 // Add action to Bundle button

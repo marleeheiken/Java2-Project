@@ -31,7 +31,7 @@ public final class StockReport {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 690;
     private static final int SCROLLWIDTH = 1000;
-    private static final int SCROLLHEIGHT = 620;
+    private static final int SCROLLHEIGHT = 590;
     private static final int TITLE_FONT_SIZE = 24;
     private static final int HEIGHT2 = 20;
     private static final int BUTTON_WIDTH = 200;
@@ -56,6 +56,9 @@ public final class StockReport {
         JPanel reportPanel = new JPanel();
         reportPanel.setLayout(new BoxLayout(reportPanel, BoxLayout.Y_AXIS));
         reportPanel.setPreferredSize(new Dimension(SCROLLWIDTH, SCROLLHEIGHT));
+        reportPanel.setPreferredSize(new Dimension(SCROLLWIDTH, SCROLLHEIGHT));
+        reportPanel.setMaximumSize(new Dimension(SCROLLWIDTH, SCROLLHEIGHT));
+
         reportPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         reportPanel.setBackground(Color.decode(WHITE_HASHCODE));
 
@@ -74,7 +77,7 @@ public final class StockReport {
         reportPanel.add(textTitleBox);
 
         // Stock Data with Scroll Pane
-        JTextArea stockText = new JTextArea(50, 60);
+        JTextArea stockText = new JTextArea(40, 60);
         stockText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         stockText.setEditable(false);
         
@@ -107,8 +110,10 @@ public final class StockReport {
         // Assemble main panel
         panel.add(Box.createVerticalStrut(HEIGHT2));
         panel.add(titleLabel);
-        panel.add(Box.createVerticalGlue());
+        panel.add(Box.createVerticalStrut(HEIGHT2));
         panel.add(reportPanel);
+        panel.add(Box.createVerticalGlue());
+
 
         return panel;
     }

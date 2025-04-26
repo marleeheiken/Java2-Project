@@ -65,7 +65,7 @@ public final class UpdateStock {
         comboBoxPanel.setLayout(new BoxLayout(comboBoxPanel, BoxLayout.Y_AXIS)); 
         comboBoxPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         comboBoxPanel.setBackground(Color.decode(WHITE_HASHCODE));
-        comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(POSITION0, POSITION0, POSITION0, 235));
+        comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(POSITION0, POSITION0, POSITION0, 218));
 
         // SKU Selection
         JPanel skuBoxPanel = new JPanel();
@@ -237,7 +237,7 @@ public final class UpdateStock {
         comboBoxPanel.add(Box.createVerticalStrut(POSITION10));
         comboBoxPanel.add(stockBoxPanel);
 
-        panel.add(Box.createVerticalStrut(POSITION50));
+        panel.add(Box.createVerticalStrut(40));
         panel.add(comboBoxPanel);
         panel.add(Box.createVerticalGlue());
 
