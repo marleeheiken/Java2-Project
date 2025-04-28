@@ -43,6 +43,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -281,123 +282,168 @@ public final class DemandAnalysis {
         }
 
         private static void generateDemandPDF(JComboBox<String> skuList, JSpinner spinner, JPanel parentPanel) {
-    try {
-        // Get current date/time for filename
-        Date now = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd-HH.mm");
-        String formattedDateTime = formatter.format(now);
-        String filename = "VR-DemandAnalysis-" + formattedDateTime + ".pdf";
-        String dbDir = new File(Database.DBName.replace("jdbc:sqlite:", "")).getParent();
-        
-        // Get selected values
-        String sku = (String) skuList.getSelectedItem();
-        int quantity = (Integer) spinner.getValue();
-        Part mainPart = Database.getSkuData(sku);
-        
-        // Calculate needed components
-        Map<String, Integer> neededComponents = new HashMap<>();
-        getRawComponents(sku, quantity, neededComponents);
-        
-        // Create PDF document
-        try (PDDocument document = new PDDocument()) {
-            PDPageContentStream contentStream = null;
-            int itemsPerPage = 45; // Match Stock Report's pagination
-            int itemCount = 0;
-            int pageNum = 1;
-            float yPosition = 685; // Starting Y position for content
-            
-            String columnTitle = String.format("%40s %7s %7s   %s", 
-                "SKU", "Need", "Stock", "Description");
-            
-            // Convert to list for easier counting
-            List<Map.Entry<String, Integer>> entries = new ArrayList<>(neededComponents.entrySet());
-            
-            for (int i = 0; i < entries.size(); i++) {
-                Map.Entry<String, Integer> entry = entries.get(i);
-                Part part = Database.getSkuData(entry.getKey());
+            try {
+                // Get current date/time for filename
+                Date now = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd-HH.mm");
+                String formattedDateTime = formatter.format(now);
+                String filename = "VR-DemandAnalysis-" + formattedDateTime + ".pdf";
+                String dbDir = new File(Database.DBName.replace("jdbc:sqlite:", "")).getParent();
                 
-                // Create new page if needed
-                if (i % itemsPerPage == 0) {
+                // Get selected values
+                String sku = (String) skuList.getSelectedItem();
+                int quantity = (Integer) spinner.getValue();
+                Part mainPart = Database.getSkuData(sku);
+                
+                // Calculate needed components
+                Map<String, Integer> neededComponents = new HashMap<>();
+                getRawComponents(sku, quantity, neededComponents);
+                
+                // Filter components and identify critical items
+                Map<String, Integer> componentsToOrder = new LinkedHashMap<>();
+                Map<String, Integer> criticalItems = new LinkedHashMap<>();
+                int totalItemsToOrder = 0;
+                
+                for (Map.Entry<String, Integer> entry : neededComponents.entrySet()) {
+                    Part part = Database.getSkuData(entry.getKey());
+                    int needed = entry.getValue();
+                    if (part.stock < needed) {
+                        int toOrder = needed - part.stock;
+                        componentsToOrder.put(entry.getKey(), toOrder);
+                        totalItemsToOrder += toOrder;
+                        if (part.stock == 0) {
+                            criticalItems.put(entry.getKey(), toOrder);
+                        }
+                    }
+                }
+                
+                // If nothing needs to be ordered, show message and return
+                if (componentsToOrder.isEmpty()) {
+                    JOptionPane.showMessageDialog(parentPanel,
+                        "No components need to be ordered - stock is sufficient.", 
+                        "Info", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                
+                // Create PDF document
+                try (PDDocument document = new PDDocument()) {
+                    PDPageContentStream contentStream = null;
+                    int itemsPerPage = 45;
+                    int itemCount = 0;
+                    int pageNum = 1;
+                    
+                    // Centered column format
+                    String columnTitle = String.format("%40s %7s %7s   %s", 
+                        "SKU", "Order", "Stock", "Description");
+                    
+                    // Convert to list for easier counting
+                    List<Map.Entry<String, Integer>> entries = new ArrayList<>(componentsToOrder.entrySet());
+                    
+                    for (int i = 0; i < entries.size(); i++) {
+                        Map.Entry<String, Integer> entry = entries.get(i);
+                        Part part = Database.getSkuData(entry.getKey());
+                        boolean isCritical = (part.stock == 0);
+                        
+                        // Create new page if needed
+                        if (i % itemsPerPage == 0) {
+                            if (contentStream != null) {
+                                contentStream.endText();
+                                contentStream.close();
+                            }
+                            
+                            PDPage page = new PDPage();
+                            document.addPage(page);
+                            contentStream = new PDPageContentStream(document, page);
+                            
+                            // Header (centered)
+                            contentStream.beginText();
+                            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD), 20);
+                            contentStream.newLineAtOffset(130, 750);
+                            contentStream.showText("Visual Robotics Demand Analysis");
+                            contentStream.endText();
+                            
+                            // Metadata (centered)
+                            contentStream.beginText();
+                            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 12);
+                            contentStream.newLineAtOffset(220, 730);
+                            contentStream.showText(formattedDateTime + " - page " + pageNum);
+                            contentStream.endText();
+                            
+                            // Summary information (left-aligned)
+                            contentStream.beginText();
+                            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 10);
+                            contentStream.newLineAtOffset(50, 710);
+                            contentStream.showText("For SKU: " + sku + " - " + mainPart.description);
+                            contentStream.newLineAtOffset(0, -15);
+                            contentStream.showText("Desired Quantity: " + quantity);
+                            contentStream.newLineAtOffset(0, -15);
+                            contentStream.showText("Total Components to Order: " + totalItemsToOrder);
+                            contentStream.newLineAtOffset(0, -15);
+                            contentStream.showText("Critical Items (zero stock): " + criticalItems.size());
+                            contentStream.endText();
+                            
+                            // Column headers (positioned just above the line)
+                            contentStream.beginText();
+                            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD), 10);
+                            contentStream.newLineAtOffset(50, 645);  // 10px above line at y=640
+                            contentStream.showText(String.format("%30s %7s %7s   %s",
+                                "SKU", "Order", "Stock", "Description"));
+                            contentStream.endText();
+                            
+                            // Header line (full width)
+                            contentStream.setLineWidth(1f);
+                            contentStream.moveTo(50, 640);
+                            contentStream.lineTo(550, 640);
+                            contentStream.stroke();
+                            
+                            contentStream.beginText();
+                            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 10);
+                            contentStream.setLeading(14.5f);
+                            contentStream.newLineAtOffset(50, 630);  // 10px below line at y=640
+                            
+                            pageNum++;
+                        }
+                        
+                        // Highlight critical items in red
+                        if (isCritical) {
+                            contentStream.setNonStrokingColor(Color.RED);
+                        }
+                        
+                        // Centered component line (matches original format)
+                        String line = String.format("%30s %6d %6d     %s",
+                            entry.getKey(), 
+                            entry.getValue(),
+                            part.stock, 
+                            part.description);
+                        contentStream.showText(line);
+                        contentStream.newLine();
+                        
+                        // Reset color if we changed it
+                        if (isCritical) {
+                            contentStream.setNonStrokingColor(Color.BLACK);
+                        }
+                        
+                        itemCount++;
+                    }
+                    
+                    // Final cleanup
                     if (contentStream != null) {
                         contentStream.endText();
                         contentStream.close();
                     }
                     
-                    PDPage page = new PDPage();
-                    document.addPage(page);
-                    contentStream = new PDPageContentStream(document, page);
-                    
-                    // Header (matches Stock Report)
-                    contentStream.beginText();
-                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD), 20);
-                    contentStream.newLineAtOffset(150, 750);
-                    contentStream.showText("Visual Robotics Demand Analysis");
-                    contentStream.endText();
-                    
-                    // Metadata
-                    contentStream.beginText();
-                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 12);
-                    contentStream.newLineAtOffset(220, 730);
-                    contentStream.showText(formattedDateTime + " page " + pageNum);
-                    contentStream.endText();
-                    
-                    // Parent SKU info
-                    contentStream.beginText();
-                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 10);
-                    contentStream.newLineAtOffset(50, 710);
-                    contentStream.showText("For SKU: " + sku + " - " + mainPart.description);
-                    contentStream.newLineAtOffset(0, -15);
-                    contentStream.showText("Desired Quantity: " + quantity);
-                    contentStream.endText();
-                    
-                    // Column headers
-                    contentStream.beginText();
-                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD), 10);
-                    contentStream.newLineAtOffset(0, 680);
-                    contentStream.showText(columnTitle);
-                    contentStream.endText();
-                    
-                    // Header line
-                    contentStream.setLineWidth(1f);
-                    contentStream.moveTo(10, 675);
-                    contentStream.lineTo(602, 675);
-                    contentStream.stroke();
-                    
-                    // Start content text block
-                    contentStream.beginText();
-                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 10);
-                    contentStream.setLeading(14.5f); // Match Stock Report line spacing
-                    contentStream.newLineAtOffset(0, 665);
-                    yPosition = 665; // Reset Y position
-                    pageNum++;
+                    // Save PDF
+                    document.save(new File(Paths.get(dbDir, filename).toString()));
+                    JOptionPane.showMessageDialog(parentPanel,
+                        "PDF saved to:\n" + filename, "Success", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(parentPanel,
+                        "Error generating PDF:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
                 }
-                
-                // Add component line
-                String line = String.format("%40s %6d %6d     %s",
-                    entry.getKey(), entry.getValue(), part.stock, part.description);
-                contentStream.showText(line);
-                contentStream.newLine();
-                itemCount++;
             }
             
-            // Final cleanup
-            if (contentStream != null) {
-                contentStream.endText();
-                contentStream.close();
-            }
-            
-            // Save PDF
-            document.save(new File(Paths.get(dbDir, filename).toString()));
-            JOptionPane.showMessageDialog(parentPanel,
-                "PDF saved to:\n" + filename, "Success", JOptionPane.INFORMATION_MESSAGE);
-        }
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(parentPanel,
-            "Error generating PDF:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        ex.printStackTrace();
-    }
-}
-
 }
 
 
