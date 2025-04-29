@@ -1,5 +1,10 @@
 package com.bushnell;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -265,6 +270,78 @@ public class Database {
         return true; 
     }
     
+    public static boolean isRawComponent(String sku) {
+        // A raw component is one that isn't a parent in the BOM table
+        try (Connection conn = DriverManager.getConnection(DBName);
+             PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT COUNT(*) FROM bom WHERE parent_sku = ?")) {
+            stmt.setString(1, sku);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) == 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static String loadStringFromFile(String fileName) throws IOException, URISyntaxException {
+    ClassLoader classLoader = Database.class.getClassLoader();
+    InputStream inputStream = classLoader.getResourceAsStream(fileName);
+    if (inputStream == null) {
+        throw new IOException("File not found: " + fileName);
+    }
+    StringBuilder content = new StringBuilder();
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            content.append(line).append("\n");
+        }
+    }
+    return content.toString(); 
+}
+
+private static String replaceNamedParameters(String query, List<Object> parameterValues, String namedParam, Object value) {
+    while (query.contains(namedParam)) {
+        query = query.replaceFirst(namedParam, "?");
+        parameterValues.add(value);
+    }
+    return query;
+}
+
+public static List<Part> getRequiredStock(String sku, int desiredQty) {
+    List<Part> requiredStockList = new ArrayList<>();
+    try {
+        // Load the SQL query from file
+        String queryString = loadStringFromFile("DemandQuery.sql");
+        
+        // Replace parameters
+        List<Object> parameterValues = new ArrayList<>();
+        queryString = replaceNamedParameters(queryString, parameterValues, ":demand_qty", desiredQty);
+        queryString = replaceNamedParameters(queryString, parameterValues, ":demand_sku", sku);
+        
+        // Execute query
+        try (Connection connection = DriverManager.getConnection(DBName);
+             PreparedStatement statement = connection.prepareStatement(queryString)) {
+            
+            // Set parameters
+            for (int i = 0; i < parameterValues.size(); i++) {
+                statement.setObject(i + 1, parameterValues.get(i));
+            }
+            
+            // Process results
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                Part part = new Part();
+                part.sku = rs.getString("raw_material_sku");
+                part.description = rs.getString("raw_material_description");
+                part.quantity = rs.getInt("total_required_qty");
+                requiredStockList.add(part);
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return requiredStockList;
+}
 
 }
 

@@ -26,7 +26,6 @@ public final class UpdateStock {
     private static final int TITLE_FONT_SIZE = 24;
     private static final int HEIGHT2 = 20;
     private static final int COMBOBOX_HEIGHT = 35;
-    private static final int POSITION50 = 50;
     private static final int POSITION20 = 20;
     private static final int POSITION10 = 10;
     private static final int POSITION0 = 0;
@@ -65,7 +64,7 @@ public final class UpdateStock {
         comboBoxPanel.setLayout(new BoxLayout(comboBoxPanel, BoxLayout.Y_AXIS)); 
         comboBoxPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         comboBoxPanel.setBackground(Color.decode(WHITE_HASHCODE));
-        comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(POSITION0, POSITION0, POSITION0, 235));
+        comboBoxPanel.setBorder(BorderFactory.createEmptyBorder(POSITION0, POSITION0, POSITION0, 218));
 
         // SKU Selection
         JPanel skuBoxPanel = new JPanel();
@@ -237,7 +236,7 @@ public final class UpdateStock {
         comboBoxPanel.add(Box.createVerticalStrut(POSITION10));
         comboBoxPanel.add(stockBoxPanel);
 
-        panel.add(Box.createVerticalStrut(POSITION50));
+        panel.add(Box.createVerticalStrut(40));
         panel.add(comboBoxPanel);
         panel.add(Box.createVerticalGlue());
 
