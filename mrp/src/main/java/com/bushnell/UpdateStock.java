@@ -26,7 +26,6 @@ public final class UpdateStock {
     private static final int TITLE_FONT_SIZE = 24;
     private static final int HEIGHT2 = 20;
     private static final int COMBOBOX_HEIGHT = 35;
-    private static final int POSITION50 = 50;
     private static final int POSITION20 = 20;
     private static final int POSITION10 = 10;
     private static final int POSITION0 = 0;

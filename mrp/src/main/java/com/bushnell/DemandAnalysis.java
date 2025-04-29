@@ -6,12 +6,11 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Font;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.awt.FlowLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -24,17 +23,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
-
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -46,6 +41,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Date;
 
 public final class DemandAnalysis {
     public static final Color VS_GREEN = Color.decode("#00af74");
@@ -55,9 +52,6 @@ public final class DemandAnalysis {
     private static final int TITLE_FONT_SIZE = 24;
     private static final int HEIGHT2 = 20;
     private static final int COMBOBOX_HEIGHT = 35;
-    private static final int POSITION50 = 50;
-    private static final int POSITION20 = 20;
-    private static final int POSITION10 = 10;
     private static final int POSITION0 = 0;
     private static final int TEXT_FONT_SIZE = 20;
     private static final int SMALLER_FONT_SIZE = 15;
@@ -68,6 +62,7 @@ public final class DemandAnalysis {
 
     private static DefaultTableModel tableModel;
     private static JTable resultTable;
+    
 
     // Private constructor to prevent instantiation
     private DemandAnalysis() {
@@ -232,42 +227,79 @@ public final class DemandAnalysis {
         panel.add(Box.createVerticalStrut(20));
         panel.add(buttonPanel);
 
-        // Set up event listeners
-        skuList.addActionListener(e -> {
-            String selectedSku = (String) skuList.getSelectedItem();
-            Part part = Database.getSkuData(selectedSku);
-            descriptionLabel.setText(part.description);
-            calculateNeeds(skuList, spinner);
-        });
+        // Update your SKU listener:
+        ActionListener skuListListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String sku = (String) skuList.getSelectedItem();
+                Part part = Database.getSkuData(sku);
+                descriptionLabel.setText(part.description);
+                updateDemandTable(skuList, spinner);  // Update table instead of list
+            }
+        };
         
-        spinner.addChangeListener(e -> calculateNeeds(skuList, spinner));
+        // Add debug prints to verify listener attachment
+        System.out.println("Adding SKU listener to: " + skuList);
+        skuList.addActionListener(skuListListener);
 
+        System.out.println("Adding spinner listener to: " + spinner);
+        spinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                updateDemandTable(skuList, spinner);
+            }
+        });
         // Initial calculation
-        calculateNeeds(skuList, spinner);
+        updateDemandTable(skuList, spinner);  // Initialize table
 
         return panel;
     }
 
-        private static void calculateNeeds(JComboBox<String> skuList, JSpinner spinner) {
+    private static void updateDemandTable(JComboBox<String> skuList, JSpinner spinner) {
+        tableModel.setRowCount(0);
+        
+        String sku = (String) skuList.getSelectedItem();
+        int quantity = (Integer) spinner.getValue();
+        Part mainPart = Database.getSkuData(sku);
+        
+        /* 
+        // Always show the main part first
+        tableModel.addRow(new Object[]{
+            mainPart.sku,
+            quantity,  // Show full requested quantity
+            mainPart.stock,
+            mainPart.description
+        });*/
+        
+        // Calculate needed quantity (requested - stock)
+        int neededQuantity = Math.max(quantity - mainPart.stock, 0);
+        
+        // Only proceed if we actually need something
+        if (neededQuantity > 0) {
+            // Get required parts - pass the ORIGINAL QUERY PARAMS:
+            // - SKU as-is
+            // - FULL quantity (not neededQuantity)
+            List<Part> requiredParts = Database.getRequiredStock(sku, quantity);
+            
+            for (Part part : requiredParts) {
+                if (part.sku.equals(sku)) continue; // skip the main part
 
-            tableModel.setRowCount(0);
-            
-            String sku = (String) skuList.getSelectedItem();
-            int quantity = (Integer) spinner.getValue();
-            
-            Map<String, Integer> neededComponents = new HashMap<>();
-            getRawComponents(sku, quantity, neededComponents);
-            
-            for (Map.Entry<String, Integer> entry : neededComponents.entrySet()) {
-                Part part = Database.getSkuData(entry.getKey());
+                Part fullPartData = Database.getSkuData(part.sku);
+                int displayQty = Math.max(part.quantity - fullPartData.stock, 0);
+                /* 
+                Part fullPartData = Database.getSkuData(part.sku);
+                // Calculate display quantity (what we're short)
+                int displayQty = Math.max(part.quantity - fullPartData.stock, 0);
+                */
                 tableModel.addRow(new Object[]{
-                    entry.getKey(),
-                    entry.getValue(),
-                    part.stock,
+                    part.sku,
+                    displayQty,  // Show only the shortage amount
+                    fullPartData.stock,
                     part.description
                 });
             }
         }
+    }
 
         private static void getRawComponents(String sku, int qty, Map<String, Integer> result) {
             if (Database.isRawComponent(sku)) {
@@ -294,16 +326,19 @@ public final class DemandAnalysis {
                 String sku = (String) skuList.getSelectedItem();
                 int quantity = (Integer) spinner.getValue();
                 Part mainPart = Database.getSkuData(sku);
-                
-                // Calculate needed components
+
+                // CHANGE 1: Calculate the actual needed quantity first
+                int neededQuantity = Math.max(quantity - mainPart.stock, 0);
+
+                // CHANGE 2: Pass the neededQuantity instead of full quantity
                 Map<String, Integer> neededComponents = new HashMap<>();
-                getRawComponents(sku, quantity, neededComponents);
-                
-                // Filter components and identify critical items
+                getRawComponents(sku, neededQuantity, neededComponents);
+
+                // [Keep ALL the rest of your existing code exactly as is]
                 Map<String, Integer> componentsToOrder = new LinkedHashMap<>();
                 Map<String, Integer> criticalItems = new LinkedHashMap<>();
                 int totalItemsToOrder = 0;
-                
+
                 for (Map.Entry<String, Integer> entry : neededComponents.entrySet()) {
                     Part part = Database.getSkuData(entry.getKey());
                     int needed = entry.getValue();
@@ -385,7 +420,7 @@ public final class DemandAnalysis {
                             // Column headers (positioned just above the line)
                             contentStream.beginText();
                             contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD), 10);
-                            contentStream.newLineAtOffset(50, 645);  // 10px above line at y=640
+                            contentStream.newLineAtOffset(50, 645); 
                             contentStream.showText(String.format("%30s %7s %7s   %s",
                                 "SKU", "Order", "Stock", "Description"));
                             contentStream.endText();

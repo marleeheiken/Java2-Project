@@ -26,7 +26,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 public final class StockReport {
-    private static final String VS_GREEN_HASHCODE = "#00af74";
     private static final String WHITE_HASHCODE = "#FFFFFF";
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 690;
